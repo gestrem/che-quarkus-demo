@@ -40,7 +40,7 @@ components:
 
   - alias: java
     type: chePlugin
-    id: redhat/java/latest
+    id: redhat/java/0.43.0
     memoryLimit: 1536M
 
   - alias: yaml
