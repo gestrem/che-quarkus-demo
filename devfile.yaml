@@ -38,11 +38,6 @@ components:
     command: ['tail']
     args: ['-f', '/dev/null']
 
-  - alias: java
-    type: chePlugin
-    id: org.eclipse.che.vscode-redhat.java
-    memoryLimit: 1536M
-
   - alias: yaml
     id: redhat/vscode-yaml/latest
     type: chePlugin
