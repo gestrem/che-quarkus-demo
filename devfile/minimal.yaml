@@ -1,0 +1,87 @@
+apiVersion: 1.0.0
+metadata:
+  name: quarkus-che-demo
+
+projects:
+
+  - source:
+      type: git
+      location: 'https://github.com/clerixmaxime/che-quarkus-demo'
+    name: che-quarkus-demo
+
+components:
+
+  - alias: quarkus-builder
+    type: dockerimage
+    image: quay.io/quarkus/centos-quarkus-maven
+    memoryLimit: 2Gi
+    mountSources: true
+    command: ['tail']
+    args: ['-f', '/dev/null']
+    volumes:
+      - name: mavenrepo
+        containerPath: /root/.m2
+
+  - alias: quarkus-runner
+    type: dockerimage
+    image: registry.fedoraproject.org/fedora-minimal:29
+    memoryLimit: 16M
+    mountSources: true
+    command: ['tail']
+    args: ['-f', '/dev/null']
+
+  - alias: git
+    type: dockerimage
+    image: sunix/git-devtools
+    mountSources: true
+    memoryLimit: 256M
+    command: ['tail']
+    args: ['-f', '/dev/null']
+
+  - type: cheEditor
+    alias: theia-editor
+    id: eclipse/che-theia/next
+
+commands:
+
+  - name: compile quarkus:dev
+    actions:
+      - type: exec
+        command: pkill java; mvn compile quarkus:dev
+        component: quarkus-builder
+        workdir: /projects/che-quarkus-demo/sunix-quarkus-demo
+
+  - name: pkill java
+    actions:
+      - type: exec
+        command: pkill java
+        component: quarkus-builder
+
+  - name: package
+    actions:
+      - type: exec
+        command: mvn package
+        component: quarkus-builder
+        workdir: /projects/che-quarkus-demo/sunix-quarkus-demo
+
+  - name: package -Pnative
+    actions:
+      - type: exec
+        command: mvn package -Pnative
+        component: quarkus-builder
+        workdir: /projects/che-quarkus-demo/sunix-quarkus-demo
+
+  - name: start native
+    actions:
+      - type: exec
+        command: ./sunix-quarkus-demo-1.0-SNAPSHOT-runner -Dquarkus.http.host=0.0.0.0 & echo $!> /tmp/quarkus.pid ; wait `cat /tmp/quarkus.pid`
+        component: quarkus-runner
+        workdir: /projects/che-quarkus-demo/sunix-quarkus-demo/target
+
+  - name: stop native
+    actions:
+      - type: exec
+        command: >
+                 kill `cat /tmp/quarkus.pid`;
+        component: quarkus-runner
+        workdir: /projects/che-quarkus-demo/sunix-quarkus-demo/target
