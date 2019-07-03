@@ -44,7 +44,7 @@ components:
     memoryLimit: 1536M
 
   - alias: yaml
-    id: redhat/vscode-yaml/latest
+    id: org.eclipse.che.vscode-redhat.java
     type: chePlugin
 
   - type: cheEditor
