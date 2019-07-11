@@ -42,6 +42,14 @@ components:
     alias: theia-editor
     id: eclipse/che-theia/next
 
+  - alias: yaml
+    id: redhat/vscode-yaml/latest
+    type: chePlugin
+
+  - type: cheEditor
+    alias: theia-editor
+    id: eclipse/che-theia/next
+    
 commands:
 
   - name: compile quarkus:dev
