@@ -13,7 +13,7 @@ components:
 
   - alias: quarkus-builder
     type: dockerimage
-    image: quay.io/quarkus/centos-quarkus-maven
+    image: quay.io/quarkus/centos-quarkus-maven:19.0.2
     memoryLimit: 2Gi
     mountSources: true
     command: ['tail']
@@ -46,10 +46,11 @@ components:
     id: redhat/vscode-yaml/latest
     type: chePlugin
 
-  - type: cheEditor
-    alias: theia-editor
-    id: eclipse/che-theia/next
-    
+  - alias: java
+    type: chePlugin
+    id: redhat/java/latest
+    memoryLimit: 1536M
+
 commands:
 
   - name: compile quarkus:dev
