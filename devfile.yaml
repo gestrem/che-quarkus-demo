@@ -6,7 +6,7 @@ projects:
 
   - source:
       type: git
-      location: 'https://github.com/sunix/che-quarkus-demo'
+      location: 'https://github.com/gestrem/che-quarkus-demo'
     name: che-quarkus-demo
 
 components:
