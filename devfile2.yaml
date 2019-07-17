@@ -37,8 +37,8 @@ components:
   - type: dockerimage
     alias: nodejs
     image: registry.access.redhat.com/ubi8/nodejs-10
-    command: ['sleep']
-    args: ['infinity']
+    command: ['tail']
+    args: ['-f', '/dev/null']
     env:
       - name: HOME
         value: /home/user
