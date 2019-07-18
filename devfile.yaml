@@ -41,7 +41,7 @@ components:
     args: ['-f', '/dev/null']
     env:
       - name: HOME
-        value: /home/user
+        value: /home
       - name: PS1
         value: $(echo ${0})\\$
     memoryLimit: 512Mi
