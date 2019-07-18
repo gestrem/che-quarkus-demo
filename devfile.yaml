@@ -47,7 +47,7 @@ components:
     memoryLimit: 512Mi
     endpoints:
       - name: 'nodejs'
-        port: 3000
+        port: 8080
     mountSources: true
   
   #VertX Builder
@@ -94,7 +94,7 @@ commands:
   - name: npm install
     actions:
       - type: exec
-        command: npm install
+        command: npm install --no-audit
         component: nodejs
         workdir: /projects/openshift-che-demo/web-nodejs
   
