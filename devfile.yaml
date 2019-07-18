@@ -98,7 +98,7 @@ commands:
         component: nodejs
         workdir: /projects/openshift-che-demo/web-nodejs
   
-  - name: start server
+  - name: start node server
     actions:
       - type: exec
         command: node server.js
