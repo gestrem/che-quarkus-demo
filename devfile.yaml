@@ -41,7 +41,7 @@ components:
     args: ['-f', '/dev/null']
     env:
       - name: HOME
-        value: /home
+        value: /opt/app-root/src
       - name: PS1
         value: $(echo ${0})\\$
     memoryLimit: 512Mi
@@ -59,7 +59,7 @@ components:
     args: ['-f', '/dev/null']
     env:
       - name: HOME
-        value: /home/user
+        value: /opt/app-root/src
       - name: PS1
         value: $(echo ${0})\\$
     memoryLimit: 512Mi
