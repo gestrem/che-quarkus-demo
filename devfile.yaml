@@ -1,16 +1,17 @@
 apiVersion: 1.0.0
 metadata:
-  name: quarkus-che-demo
+  name: openshift-che-demo
 
 projects:
 
   - source:
       type: git
       location: 'https://github.com/gestrem/che-quarkus-demo'
-    name: che-quarkus-demo
+    name: openshift-che-demo
 
 components:
 
+#Quarkus Builder
   - alias: quarkus-builder
     type: dockerimage
     image: quay.io/quarkus/centos-quarkus-maven:19.0.2
@@ -22,6 +23,7 @@ components:
       - name: mavenrepo
         containerPath: /root/.m2
 
+#Quarkus Runner
   - alias: quarkus-runner
     type: dockerimage
     image: registry.fedoraproject.org/fedora-minimal:29
@@ -29,6 +31,42 @@ components:
     mountSources: true
     command: ['tail']
     args: ['-f', '/dev/null']
+
+#NodeJS Builder
+
+  - type: dockerimage
+    alias: nodejs
+    image: registry.access.redhat.com/ubi8/nodejs-10
+    command: ['tail']
+    args: ['-f', '/dev/null']
+    env:
+      - name: HOME
+        value: /home/user
+      - name: PS1
+        value: $(echo ${0})\\$
+    memoryLimit: 512Mi
+    endpoints:
+      - name: 'nodejs'
+        port: 3000
+    mountSources: true
+  
+  #VertX Builder
+
+  - type: dockerimage
+    alias: vertx
+    image: quay.io/openshiftio/che-vertx
+    command: ['tail']
+    args: ['-f', '/dev/null']
+    env:
+      - name: HOME
+        value: /home/user
+      - name: PS1
+        value: $(echo ${0})\\$
+    memoryLimit: 512Mi
+    endpoints:
+      - name: 'vertx'
+        port: 8080
+    mountSources: true
 
   - alias: git
     type: dockerimage
@@ -52,6 +90,20 @@ components:
     memoryLimit: 1536M
 
 commands:
+
+  - name: npm install
+    actions:
+      - type: exec
+        command: npm install
+        component: nodejs
+        workdir: /projects/openshift-che-demo/web-nodejs
+  
+  - name: npm install
+    actions:
+      - type: exec
+        command: node server.js
+        component: nodejs
+        workdir: /projects/openshift-che-demo/web-nodejs
 
   - name: compile quarkus:dev
     actions:
