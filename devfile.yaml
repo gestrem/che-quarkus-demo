@@ -11,6 +11,31 @@ projects:
 
 components:
 
+  #Postgres Database
+
+  - type: dockerimage
+    alias: postgres
+    image: registry.redhat.io/rhscl/postgresql-95-rhel7
+    memoryLimit: 512Mi
+    env:
+      - name: POSTGRESQL_USER
+        value: user
+      - name: POSTGRESQL_PASSWORD
+        value: password
+      - name: POSTGRESQL_DATABASE
+        value: db
+      - name: POSTGRES_ADMIN_PASSWORD
+        value: password
+    volumes:
+      - name: pgsql-storage
+        containerPath: /var/lib/pgsql/data
+    endpoints:
+      - name: postgres
+        port: 5432
+        attributes:
+          discoverable: 'true'
+          public: 'false'
+
 #Quarkus Builder
   - alias: quarkus-builder
     type: dockerimage
@@ -32,6 +57,31 @@ components:
     command: ['tail']
     args: ['-f', '/dev/null']
 
+#Springboot
+  - alias: springboot
+    type: dockerimage
+    image: registry.redhat.io/openjdk/openjdk-8-rhel8
+    memoryLimit: 2Gi
+    mountSources: true
+    command: ['tail']
+    args: ['-f', '/dev/null']
+    volumes:
+      - name: mavenrepo
+        containerPath: /root/.m2
+
+#wildflyswarm
+
+  - alias: wildfly
+    type: dockerimage
+    image: registry.redhat.io/openjdk/openjdk-8-rhel8
+    memoryLimit: 2Gi
+    mountSources: true
+    command: ['tail']
+    args: ['-f', '/dev/null']
+    volumes:
+      - name: mavenrepo
+        containerPath: /root/.m2
+
 #NodeJS Builder
 
   - type: dockerimage
@@ -50,7 +100,7 @@ components:
         port: 8080
     mountSources: true
   
-  #VertX Builder
+  #VertX 
 
   - type: dockerimage
     alias: vertx
@@ -65,7 +115,7 @@ components:
     memoryLimit: 512Mi
     endpoints:
       - name: 'vertx'
-        port: 8080
+        port: 9000
     mountSources: true
 
   - alias: git
@@ -87,7 +137,6 @@ components:
   - alias: java
     type: chePlugin
     id: redhat/java/latest
-    memoryLimit: 1536M
 
 commands:
 
@@ -104,6 +153,34 @@ commands:
         command: node server.js
         component: nodejs
         workdir: /projects/openshift-che-demo/web-nodejs
+
+  - name: package vertx
+    actions:
+      - type: exec
+        command: mvn clean package 
+        component: vertx
+        workdir: /projects/openshift-che-demo/gateway-vertx
+
+  - name: run vertx
+    actions:
+      - type: exec
+        command: mvn clean compile vertx:run
+        component: vertx
+        workdir: /projects/openshift-che-demo/gateway-vertx
+
+  - name: run wildfly
+    actions:
+      - type: exec
+        command: mvn wildfly-swarm:run
+        component: wildfly
+        workdir: /projects/openshift-che-demo/inventory-wildfly-swarm
+  
+  - name: run springboot
+    actions:
+      - type: exec
+        command: mvn spring-boot:run
+        component: springboot
+        workdir: /projects/openshift-che-demo/catalog-spring-boot
 
   - name: compile quarkus:dev
     actions:
