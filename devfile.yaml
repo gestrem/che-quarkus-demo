@@ -13,28 +13,6 @@ components:
 
   #Postgres Database
 
-  - type: dockerimage
-    alias: postgres
-    image: registry.redhat.io/rhscl/postgresql-95-rhel7
-    memoryLimit: 512Mi
-    env:
-      - name: POSTGRESQL_USER
-        value: user
-      - name: POSTGRESQL_PASSWORD
-        value: password
-      - name: POSTGRESQL_DATABASE
-        value: db
-      - name: POSTGRES_ADMIN_PASSWORD
-        value: password
-    volumes:
-      - name: pgsql-storage
-        containerPath: /var/lib/pgsql/data
-    endpoints:
-      - name: postgres
-        port: 5432
-        attributes:
-          discoverable: 'true'
-          public: 'false'
 
 #Quarkus Builder
   - alias: quarkus-builder
