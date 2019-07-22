@@ -11,17 +11,21 @@ projects:
 
 components:
 
-#Springboot
-  - alias: springboot
-    type: dockerimage
-    image: maven:3.6.0-jdk-11
-    memoryLimit: 2Gi
-    mountSources: true
+  - type: dockerimage
+    alias: nodejs
+    image: registry.access.redhat.com/ubi8/nodejs-10
     command: ['tail']
     args: ['-f', '/dev/null']
-    volumes:
-      - name: mavenrepo
-        containerPath: /root/.m2
+    env:
+      - name: HOME
+        value: /opt/app-root/src
+      - name: PS1
+        value: $(echo ${0})\\$
+    memoryLimit: 512Mi
+    endpoints:
+      - name: 'nodejs'
+        port: 8080
+    mountSources: true
 
   - alias: quarkus-builder
     type: dockerimage
@@ -65,12 +69,19 @@ components:
 
 commands:
 
-  - name: run springboot
+  - name: npm install
+    actions:
+      - type: exec
+        command: npm install --no-audit
+        component: nodejs
+        workdir: /projects/openshift-che-demo/web-nodejs
+        
+  - name: start node server
     actions:
     - type: exec
-      command: mvn spring-boot:run
-      component: springboot
-      workdir: /projects/openshift-che-demo/catalog-spring-boot
+      command: node server.js
+      component: nodejs
+      workdir: /projects/openshift-che-demo/web-nodejs
 
   - name: compile quarkus:dev
     actions:
