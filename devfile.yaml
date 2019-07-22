@@ -77,21 +77,21 @@ components:
   
   #VertX 
 
-  - type: dockerimage
-    alias: vertx
-    image: quay.io/openshiftio/che-vertx
-    command: ['tail']
-    args: ['-f', '/dev/null']
-    env:
-      - name: HOME
-        value: /opt/app-root/src
-      - name: PS1
-        value: $(echo ${0})\\$
-    memoryLimit: 512Mi
-    endpoints:
-      - name: 'vertx'
-        port: 9000
-    mountSources: true
+  # - type: dockerimage
+  #   alias: vertx
+  #   image: quay.io/openshiftio/che-vertx
+  #   command: ['tail']
+  #   args: ['-f', '/dev/null']
+  #   env:
+  #     - name: HOME
+  #       value: /opt/app-root/src
+  #     - name: PS1
+  #       value: $(echo ${0})\\$
+  #   memoryLimit: 512Mi
+  #   endpoints:
+  #     - name: 'vertx'
+  #       port: 9000
+  #   mountSources: true
 
   - alias: git
     type: dockerimage
@@ -129,19 +129,19 @@ commands:
         component: nodejs
         workdir: /projects/openshift-che-demo/web-nodejs
 
-  - name: package vertx
-    actions:
-      - type: exec
-        command: mvn clean package 
-        component: vertx
-        workdir: /projects/openshift-che-demo/gateway-vertx
+  # - name: package vertx
+  #   actions:
+  #     - type: exec
+  #       command: mvn clean package 
+  #       component: vertx
+  #       workdir: /projects/openshift-che-demo/gateway-vertx
 
-  - name: run vertx
-    actions:
-      - type: exec
-        command: mvn clean compile vertx:run
-        component: vertx
-        workdir: /projects/openshift-che-demo/gateway-vertx
+  # - name: run vertx
+  #   actions:
+  #     - type: exec
+  #       command: mvn clean compile vertx:run
+  #       component: vertx
+  #       workdir: /projects/openshift-che-demo/gateway-vertx
 
   # - name: run wildfly
   #   actions:
