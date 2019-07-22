@@ -11,22 +11,6 @@ projects:
 
 components:
 
-  - type: dockerimage
-    alias: nodejs
-    image: registry.access.redhat.com/ubi8/nodejs-10
-    command: ['tail']
-    args: ['-f', '/dev/null']
-    env:
-      - name: HOME
-        value: /opt/app-root/src
-      - name: PS1
-        value: $(echo ${0})\\$
-    memoryLimit: 512Mi
-    endpoints:
-      - name: 'nodejs'
-        port: 8080
-    mountSources: true
-
   - alias: quarkus-builder
     type: dockerimage
     image: quay.io/quarkus/centos-quarkus-maven:19.0.2
@@ -45,6 +29,23 @@ components:
     mountSources: true
     command: ['tail']
     args: ['-f', '/dev/null']
+
+
+  - type: dockerimage
+    alias: nodejs
+    image: registry.access.redhat.com/ubi8/nodejs-10
+    command: ['tail']
+    args: ['-f', '/dev/null']
+    env:
+      - name: HOME
+        value: /opt/app-root/src
+      - name: PS1
+        value: $(echo ${0})\\$
+    memoryLimit: 512Mi
+    endpoints:
+      - name: 'nodejs'
+        port: 8080
+    mountSources: true
 
   - alias: git
     type: dockerimage
@@ -75,7 +76,7 @@ commands:
         command: npm install --no-audit
         component: nodejs
         workdir: /projects/openshift-che-demo/web-nodejs
-        
+
   - name: start node server
     actions:
     - type: exec
