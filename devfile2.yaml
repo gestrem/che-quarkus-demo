@@ -14,7 +14,7 @@ components:
 #Springboot
   - alias: springboot
     type: dockerimage
-    image: registry.redhat.io/openjdk/openjdk-8-rhel8
+    image: maven:3.6.0-jdk-11
     memoryLimit: 2Gi
     mountSources: true
     command: ['tail']
