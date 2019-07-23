@@ -30,9 +30,8 @@ components:
     command: ['tail']
     args: ['-f', '/dev/null']
 
-
-  - type: dockerimage
-    alias: nodejs
+  - alias: nodejs
+    type: dockerimage  
     image: registry.access.redhat.com/ubi8/nodejs-10
     command: ['tail']
     args: ['-f', '/dev/null']

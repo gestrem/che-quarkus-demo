@@ -33,16 +33,16 @@ components:
     args: ['-f', '/dev/null']
 
 #Springboot
-  # - alias: springboot
-  #   type: dockerimage
-  #   image: registry.redhat.io/openjdk/openjdk-8-rhel8
-  #   memoryLimit: 2Gi
-  #   mountSources: true
-  #   command: ['tail']
-  #   args: ['-f', '/dev/null']
-  #   volumes:
-  #     - name: mavenrepo1
-  #       containerPath: /root/.m2
+  -  alias: springboot
+     type: dockerimage
+     image: registry.redhat.io/openjdk/openjdk-8-rhel8
+     memoryLimit: 2Gi
+     mountSources: true
+     command: ['tail']
+     args: ['-f', '/dev/null']
+     volumes:
+       - name: mavenrepo1
+         containerPath: /root/.m2
 
 #wildflyswarm
 
@@ -150,12 +150,12 @@ commands:
   #       component: wildfly
   #       workdir: /projects/openshift-che-demo/inventory-wildfly-swarm
   
-  # - name: run springboot
-  #   actions:
-  #     - type: exec
-  #       command: mvn spring-boot:run
-  #       component: springboot
-  #       workdir: /projects/openshift-che-demo/catalog-spring-boot
+  -  name: run springboot
+     actions:
+       - type: exec
+         command: mvn clean install && mvn spring-boot:run
+         component: springboot
+         workdir: /projects/openshift-che-demo/catalog-spring-boot
 
   - name: compile quarkus:dev
     actions:
