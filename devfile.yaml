@@ -41,21 +41,21 @@ components:
      command: ['tail']
      args: ['-f', '/dev/null']
      volumes:
-       - name: mavenrepo1
+       - name: mavenrepo
          containerPath: /root/.m2
 
 #wildflyswarm
 
-  # - alias: wildfly
-  #   type: dockerimage
-  #   image: registry.redhat.io/openjdk/openjdk-8-rhel8
-  #   memoryLimit: 2Gi
-  #   mountSources: true
-  #   command: ['tail']
-  #   args: ['-f', '/dev/null']
-  #   volumes:
-  #     - name: mavenrepo2
-  #       containerPath: /root/.m2
+  -  alias: wildfly
+     type: dockerimage
+     image: registry.redhat.io/openjdk/openjdk-8-rhel8
+     memoryLimit: 2Gi
+     mountSources: true
+     command: ['tail']
+     args: ['-f', '/dev/null']
+     volumes:
+       - name: mavenrepo
+         containerPath: /root/.m2
 
 #NodeJS Builder
 
@@ -143,12 +143,12 @@ commands:
   #       component: vertx
   #       workdir: /projects/openshift-che-demo/gateway-vertx
 
-  # - name: run wildfly
-  #   actions:
-  #     - type: exec
-  #       command: mvn wildfly-swarm:run
-  #       component: wildfly
-  #       workdir: /projects/openshift-che-demo/inventory-wildfly-swarm
+  -  name: run wildfly
+     actions:
+       - type: exec
+         command: mvn wildfly-swarm:run
+         component: wildfly
+         workdir: /projects/openshift-che-demo/inventory-wildfly-swarm
   
   -  name: run springboot
      actions:
