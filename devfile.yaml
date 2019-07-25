@@ -1,201 +1,225 @@
-apiVersion: 1.0.0
+commands:
+  - name: npm install
+    actions:
+      - command: npm install --no-audit
+        component: nodejs
+        workdir: /projects/openshift-che-demo/web-nodejs
+        type: exec
+    attributes: {}
+  - name: start node server
+    actions:
+      - command: node server.js
+        component: nodejs
+        workdir: /projects/openshift-che-demo/web-nodejs
+        type: exec
+    attributes: {}
+  - name: run wildfly
+    actions:
+      - command: 'mvn wildfly-swarm:run'
+        component: wildfly
+        workdir: /projects/openshift-che-demo/inventory-wildfly-swarm
+        type: exec
+    attributes: {}
+  - name: run springboot
+    actions:
+      - command: 'mvn clean install && mvn spring-boot:run'
+        component: springboot
+        workdir: /projects/openshift-che-demo/catalog-spring-boot
+        type: exec
+    attributes: {}
+  - name: 'compile quarkus:dev'
+    actions:
+      - command: 'pkill java; mvn compile quarkus:dev'
+        component: quarkus-builder
+        workdir: /projects/openshift-che-demo/sunix-quarkus-demo
+        type: exec
+    attributes: {}
+  - name: pkill java
+    actions:
+      - command: pkill java
+        component: quarkus-builder
+        type: exec
+    attributes: {}
+  - name: package
+    actions:
+      - command: mvn package
+        component: quarkus-builder
+        workdir: /projects/openshift-che-demo/sunix-quarkus-demo
+        type: exec
+    attributes: {}
+  - name: package -Pnative
+    actions:
+      - command: mvn package -Pnative
+        component: quarkus-builder
+        workdir: /projects/openshift-che-demo/sunix-quarkus-demo
+        type: exec
+    attributes: {}
+  - name: start native
+    actions:
+      - command: >-
+          ./sunix-quarkus-demo-1.0-SNAPSHOT-runner -Dquarkus.http.host=0.0.0.0 &
+          echo $!> /tmp/quarkus.pid ; wait `cat /tmp/quarkus.pid`
+        component: quarkus-runner
+        workdir: /projects/openshift-che-demo/sunix-quarkus-demo/target
+        type: exec
+    attributes: {}
+  - name: stop native
+    actions:
+      - command: |
+          kill `cat /tmp/quarkus.pid`;
+        component: quarkus-runner
+        workdir: /projects/openshift-che-demo/sunix-quarkus-demo/target
+        type: exec
+    attributes: {}
 metadata:
   name: openshift-che-demo
-
-projects:
-
-  - source:
-      type: git
-      location: 'https://github.com/gestrem/che-quarkus-demo'
-    name: openshift-che-demo
-
 components:
-
-#Quarkus Builder
-  - alias: quarkus-builder
-    type: dockerimage
-    image: quay.io/quarkus/centos-quarkus-maven:19.0.2
+  - endpoints: []
     memoryLimit: 2Gi
-    mountSources: true
-    command: ['tail']
-    args: ['-f', '/dev/null']
+    preferences: {}
+    args:
+      - '-f'
+      - /dev/null
+    command:
+      - tail
+    env: []
+    selector: {}
     volumes:
-      - name: mavenrepo
-        containerPath: /root/.m2
-
-#Quarkus Runner
-  - alias: quarkus-runner
-    type: dockerimage
-    image: registry.fedoraproject.org/fedora-minimal:29
-    memoryLimit: 16M
+      - containerPath: /root/.m2
+        name: mavenrepo
+    alias: quarkus-builder
+    entrypoints: []
     mountSources: true
-    command: ['tail']
-    args: ['-f', '/dev/null']
-
-#Springboot
-  -  alias: springboot
-     type: dockerimage
-     image: registry.redhat.io/openjdk/openjdk-8-rhel8
-     memoryLimit: 2Gi
-     mountSources: true
-     command: ['tail']
-     args: ['-f', '/dev/null']
-     volumes:
-       - name: mavenrepo
-         containerPath: /root/.m2
-
-#wildflyswarm
-
-  -  alias: wildfly
-     type: dockerimage
-     image: registry.redhat.io/openjdk/openjdk-8-rhel8
-     memoryLimit: 2Gi
-     mountSources: true
-     command: ['tail']
-     args: ['-f', '/dev/null']
-     volumes:
-       - name: mavenrepo
-         containerPath: /root/.m2
-
-#NodeJS Builder
-
-  - type: dockerimage
-    alias: nodejs
-    image: registry.access.redhat.com/ubi8/nodejs-10
-    command: ['tail']
-    args: ['-f', '/dev/null']
+    image: 'quay.io/quarkus/centos-quarkus-maven:19.0.2'
+    type: dockerimage
+  - endpoints: []
+    memoryLimit: 16M
+    preferences: {}
+    args:
+      - '-f'
+      - /dev/null
+    command:
+      - tail
+    env: []
+    selector: {}
+    volumes: []
+    alias: quarkus-runner
+    entrypoints: []
+    mountSources: true
+    image: 'registry.fedoraproject.org/fedora-minimal:29'
+    type: dockerimage
+  - endpoints: []
+    memoryLimit: 2Gi
+    preferences: {}
+    args:
+      - '-f'
+      - /dev/null
+    command:
+      - tail
+    env: []
+    selector: {}
+    volumes:
+      - containerPath: /root/.m2
+        name: mavenrepo
+    alias: springboot
+    entrypoints: []
+    mountSources: true
+    image: registry.redhat.io/openjdk/openjdk-8-rhel8
+    type: dockerimage
+  - endpoints: []
+    memoryLimit: 2Gi
+    preferences: {}
+    args:
+      - '-f'
+      - /dev/null
+    command:
+      - tail
+    env: []
+    selector: {}
+    volumes:
+      - containerPath: /root/.m2
+        name: mavenrepo
+    alias: wildfly
+    entrypoints: []
+    mountSources: true
+    image: registry.redhat.io/openjdk/openjdk-8-rhel8
+    type: dockerimage
+  - endpoints:
+      - name: nodejs
+        port: 8080
+        attributes: {}
+    memoryLimit: 512Mi
+    preferences: {}
+    args:
+      - '-f'
+      - /dev/null
+    command:
+      - tail
     env:
       - name: HOME
         value: /opt/app-root/src
       - name: PS1
-        value: $(echo ${0})\\$
-    memoryLimit: 512Mi
-    endpoints:
-      - name: 'nodejs'
-        port: 8080
+        value: '$(echo ${0})\\$'
+    selector: {}
+    volumes: []
+    alias: nodejs
+    entrypoints: []
     mountSources: true
-  
-  #VertX 
-
-  # - type: dockerimage
-  #   alias: vertx
-  #   image: quay.io/openshiftio/che-vertx
-  #   command: ['tail']
-  #   args: ['-f', '/dev/null']
-  #   env:
-  #     - name: HOME
-  #       value: /opt/app-root/src
-  #     - name: PS1
-  #       value: $(echo ${0})\\$
-  #   memoryLimit: 512Mi
-  #   endpoints:
-  #     - name: 'vertx'
-  #       port: 9000
-  #   mountSources: true
-
-  - alias: git
+    image: registry.access.redhat.com/ubi8/nodejs-10
     type: dockerimage
-    image: sunix/git-devtools
-    mountSources: true
+  - endpoints: []
     memoryLimit: 256M
-    command: ['tail']
-    args: ['-f', '/dev/null']
-
-  - type: cheEditor
+    preferences: {}
+    args:
+      - '-f'
+      - /dev/null
+    command:
+      - tail
+    env: []
+    selector: {}
+    volumes: []
+    alias: git
+    entrypoints: []
+    mountSources: true
+    image: sunix/git-devtools
+    type: dockerimage
+  - endpoints: []
+    preferences: {}
+    args: []
+    command: []
+    env: []
+    selector: {}
+    volumes: []
     alias: theia-editor
+    entrypoints: []
     id: eclipse/che-theia/next
-
-  - alias: yaml
+    type: cheEditor
+  - endpoints: []
+    preferences: {}
+    args: []
+    command: []
+    env: []
+    selector: {}
+    volumes: []
+    alias: yaml
+    entrypoints: []
     id: redhat/vscode-yaml/latest
     type: chePlugin
-
-  - alias: java
-    type: chePlugin
+  - endpoints: []
+    preferences: {}
+    args: []
+    command: []
+    env: []
+    selector: {}
+    volumes: []
+    alias: java
+    entrypoints: []
     id: redhat/java/latest
-
-commands:
-
-  - name: npm install
-    actions:
-      - type: exec
-        command: npm install --no-audit
-        component: nodejs
-        workdir: /projects/openshift-che-demo/web-nodejs
-  
-  - name: start node server
-    actions:
-      - type: exec
-        command: node server.js
-        component: nodejs
-        workdir: /projects/openshift-che-demo/web-nodejs
-
-  # - name: package vertx
-  #   actions:
-  #     - type: exec
-  #       command: mvn clean package 
-  #       component: vertx
-  #       workdir: /projects/openshift-che-demo/gateway-vertx
-
-  # - name: run vertx
-  #   actions:
-  #     - type: exec
-  #       command: mvn clean compile vertx:run
-  #       component: vertx
-  #       workdir: /projects/openshift-che-demo/gateway-vertx
-
-  -  name: run wildfly
-     actions:
-       - type: exec
-         command: mvn wildfly-swarm:run
-         component: wildfly
-         workdir: /projects/openshift-che-demo/inventory-wildfly-swarm
-  
-  -  name: run springboot
-     actions:
-       - type: exec
-         command: mvn clean install && mvn spring-boot:run
-         component: springboot
-         workdir: /projects/openshift-che-demo/catalog-spring-boot
-
-  - name: compile quarkus:dev
-    actions:
-      - type: exec
-        command: pkill java; mvn compile quarkus:dev
-        component: quarkus-builder
-        workdir: /projects/openshift-che-demo/sunix-quarkus-demo
-
-  - name: pkill java
-    actions:
-      - type: exec
-        command: pkill java
-        component: quarkus-builder
-
-  - name: package
-    actions:
-      - type: exec
-        command: mvn package
-        component: quarkus-builder
-        workdir: /projects/openshift-che-demo/sunix-quarkus-demo
-
-  - name: package -Pnative
-    actions:
-      - type: exec
-        command: mvn package -Pnative
-        component: quarkus-builder
-        workdir: /projects/openshift-che-demo/sunix-quarkus-demo
-
-  - name: start native
-    actions:
-      - type: exec
-        command: ./sunix-quarkus-demo-1.0-SNAPSHOT-runner -Dquarkus.http.host=0.0.0.0 & echo $!> /tmp/quarkus.pid ; wait `cat /tmp/quarkus.pid`
-        component: quarkus-runner
-        workdir: /projects/openshift-che-demo/sunix-quarkus-demo/target
-
-  - name: stop native
-    actions:
-      - type: exec
-        command: >
-                 kill `cat /tmp/quarkus.pid`;
-        component: quarkus-runner
-        workdir: /projects/openshift-che-demo/sunix-quarkus-demo/target
-
+    type: chePlugin
+apiVersion: 1.0.0
+projects:
+  - source:
+      location: 'https://github.com/gestrem/che-quarkus-demo'
+      type: git
+    name: openshift-che-demo
+attributes: {}
